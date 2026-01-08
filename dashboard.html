@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            background-color: #f2f2f2;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #000;
+            overflow-y: auto;
+        }
+
+        .weather-dashboard {
+            height: 100vh;
+            background-color: #f2f2f2;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #000;
+            overflow-y: auto;
+        }
+
+        /* Search Bar */
+        .search-container {
+            padding: 24px 32px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: #e8e8e8;
+            border-radius: 50px;
+            padding: 12px 20px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            color: #000;
+            flex-shrink: 0;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 16px;
+            font-family: inherit;
+            color: #000;
+            flex: 1;
+        }
+
+        .search-bar input::placeholder {
+            color: #666;
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 32px;
+            padding: 100px 32px 32px;
+            width: 100%;
+        }
+
+        /* Left Column - Main Weather */
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .main-weather-card {
+            background-color: #e8e8e8;
+            border-radius: 20px;
+            padding: 32px;
+            position: relative;
+        }
+
+        .date-section {
+            margin-bottom: 24px;
+        }
+
+        .day {
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .date {
+            font-size: 14px;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .weather-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .weather-info {
+            flex: 1;
+        }
+
+        .temperature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .temp-number {
+            font-size: 72px;
+            font-weight: 600;
+            color: #000;
+            margin-right: 8px;
+        }
+
+        .thermometer-icon {
+            width: 24px;
+            height: 24px;
+            color: #000;
+        }
+
+        .temp-range {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .description {
+            font-size: 24px;
+            font-weight: 500;
+            color: #000;
+            margin-bottom: 8px;
+            text-transform: capitalize;
+        }
+
+        .feels-like {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .weather-icon {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .weather-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .weather-icon svg {
+            width: 80px;
+            height: 80px;
+            color: #000;
+        }
+
+        .city-name-section {
+            text-align: center;
+        }
+
+        .city-name {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .location-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            color: #000;
+        }
+
+        .city-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: #000;
+            text-decoration: underline;
+        }
+
+        .country-text {
+            font-size: 18px;
+            color: #666;
+            font-weight: 400;
+        }
+
+        /* Right Column - Details & Other Cities */
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        /* Weather Details Cards */
+        .weather-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .detail-card {
+            background-color: #e8e8e8;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .pressure-card {
+            grid-column: span 2;
+        }
+
+        .detail-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        /* Other Cities Section */
+        .other-cities-section {
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        .city-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .city-card {
+            background-color: #e8e8e8;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .city-card:hover {
+            background-color: #ddd;
+        }
+
+        .city-temp {
+            font-size: 32px;
+            font-weight: 600;
+            color: #000;
+            margin-right: 16px;
+        }
+
+        .city-weather-icon {
+            width: 32px;
+            height: 32px;
+            color: #000;
+            margin-right: 16px;
+        }
+
+        .city-name-small {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .show-all-btn {
+            background-color: #e8e8e8;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #000;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            align-self: flex-end;
+        }
+
+        .show-all-btn:hover {
+            background-color: #ddd;
+        }
+
+        /* Error and Warning Messages */
+        .error {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ff6b6b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+        }
+
+        .api-key-warning {
+            position: fixed;
+            bottom: 20px;
+            left: 32px;
+            right: 32px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 16px;
+            z-index: 1000;
+        }
+
+        .api-key-warning p {
+            margin: 0;
+            color: #856404;
+            font-size: 14px;
+        }
+
+        .api-key-warning a {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                padding: 80px 16px 16px;
+                gap: 24px;
+            }
+
+            .search-container {
+                padding: 16px;
+            }
+
+            .search-bar {
+                max-width: 100%;
+            }
+
+            .main-weather-card {
+                padding: 24px;
+            }
+
+            .temp-number {
+                font-size: 56px;
+            }
+
+            .weather-main {
+                flex-direction: column;
+                text-align: center;
+                gap: 24px;
+            }
+
+            .weather-icon {
+                width: 100px;
+                height: 100px;
+            }
+
+            .weather-icon svg {
+                width: 60px;
+                height: 60px;
+            }
+
+            .weather-details {
+                grid-template-columns: 1fr;
+            }
+
+            .pressure-card {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="weather-dashboard">
+        <!-- Top Search Bar -->
+        <div class="search-container">
+            <div class="search-bar">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" placeholder="Search for a city" />
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="main-content">
+            <!-- Left Column - Main Weather -->
+            <div class="left-column">
+                <!-- Main Weather Card -->
+                <div class="main-weather-card">
+                    <div class="date-section">
+                        <div class="day">Monday</div>
+                        <div class="date">07 Jan, 2026</div>
+                    </div>
+
+                    <div class="weather-main">
+                        <div class="weather-info">
+                            <div class="temperature">
+                                <span class="temp-number">26</span>
+                                <svg class="thermometer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+                                </svg>
+                            </div>
+                            <div class="temp-range">High: 27 Low: 10</div>
+                            <div class="description">Cloudy</div>
+                            <div class="feels-like">Feels Like 26</div>
+                        </div>
+
+                        <div class="weather-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                <path d="M12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7z"/>
+                                <path d="M8 16.5c0-1.5 1.5-3 3.5-3s3.5 1.5 3.5 3"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- City Name Section -->
+                <div class="city-name-section">
+                    <div class="city-name">
+                        <svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                        <span class="city-text">Manila,</span>
+                    </div>
+                    <div class="country-text">Philippines</div>
+                </div>
+            </div>
+
+            <!-- Right Column - Details & Other Cities -->
+            <div class="right-column">
+                <!-- Weather Details Cards -->
+                <div class="weather-details">
+                    <div class="detail-card">
+                        <div class="detail-title">Humidity</div>
+                        <div class="detail-value">65%</div>
+                    </div>
+
+                    <div class="detail-card">
+                        <div class="detail-title">Wind</div>
+                        <div class="detail-value">5.2 m/s</div>
+                    </div>
+
+                    <div class="detail-card pressure-card">
+                        <div class="detail-title">Pressure</div>
+                        <div class="detail-value">1013 hPa</div>
+                    </div>
+                </div>
+
+                <!-- Other Cities Section -->
+                <div class="other-cities-section">
+                    <div class="section-title">Other Cities</div>
+
+                    <div class="city-cards">
+                        <div class="city-card">
+                            <div class="city-temp">14°</div>
+                            <svg class="city-weather-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/>
+                                <path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/>
+                            </svg>
+                            <div class="city-name-small">Tokyo, JP</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-temp">8°</div>
+                            <svg class="city-weather-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M20 16.2A4.5 4.5 0 0 0 19.1 14a3.5 3.5 0 0 0-5.8 0 3.5 3.5 0 0 0-5.8 0A4.5 4.5 0 0 0 7 16.2"/>
+                                <path d="M12 12v8"/>
+                                <path d="M12 4v4"/>
+                            </svg>
+                            <div class="city-name-small">New York, US</div>
+                        </div>
+
+                        <div class="city-card">
+                            <div class="city-temp">11°</div>
+                            <svg class="city-weather-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/>
+                                <path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/>
+                            </svg>
+                            <div class="city-name-small">London, UK</div>
+                        </div>
+                    </div>
+
+                    <button class="show-all-btn">Show all</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
